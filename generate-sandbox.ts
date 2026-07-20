@@ -163,12 +163,105 @@ export function phaseB(sampleDir: string): SeedBundle {
   //              embeddings computed lazily at seed time (or precomputed and committed).
   void read;
 
+  const contactId = (key: string) => stableId(`contact:${key}`);
+  const addInteraction = (key: string, row: Record<string, unknown>) => {
+    bundle.interactions.push({
+      id: stableId(`interaction:${key}`),
+      user_id: userId,
+      source_ref: key,
+      created_at: anchorDate,
+      ...row,
+    });
+  };
+
+  addInteraction("marta-call-procurement", {
+    contact_id: contactId("marta"),
+    kind: "call_notes",
+    occurred_at: "2026-06-23T14:00:00Z",
+    raw_text: "Marta praised LingoLoop's QA workflow but flagged procurement pressure around the number of tools Datawise is carrying. She asked for a short CFO-friendly case study before renewal.",
+    summary: "Marta likes the product but procurement pressure could affect renewal.",
+    sentiment: "at_risk",
+    sentiment_evidence: "flagged procurement pressure",
+    authored_by_founder: true,
+  });
+  addInteraction("marta-email-consolidation", {
+    contact_id: contactId("marta"),
+    kind: "email_in",
+    occurred_at: "2026-07-08T08:30:00Z",
+    thread_ref: "thread:marta:consolidation",
+    raw_text: "Hi Alex — we're evaluating whether to consolidate tools next quarter. Can you send the latest notes on what LingoLoop replaces and where it still needs a separate workflow? Best, Marta",
+    summary: "Marta says Datawise is evaluating whether to consolidate tools next quarter and asks for replacement notes.",
+    sentiment: "at_risk",
+    sentiment_evidence: "evaluating whether to consolidate tools next quarter",
+    authored_by_founder: false,
+  });
+  addInteraction("marta-stripe-failed-payment", {
+    contact_id: contactId("marta"),
+    kind: "stripe_event",
+    occurred_at: "2026-07-12T06:15:00Z",
+    raw_text: "invoice.payment_failed for Datawise customer cus_datawise_marta: €299 monthly plan, reason expired card.",
+    summary: "Datawise's €299 monthly payment failed because the card is expired.",
+    sentiment: "negative",
+    sentiment_evidence: "expired card",
+    authored_by_founder: false,
+  });
+  addInteraction("jonas-call-40-seat-july", {
+    contact_id: contactId("jonas"),
+    kind: "call_notes",
+    occurred_at: "2026-07-05T10:00:00Z",
+    raw_text: "Jonas was excited after the demo. Exact next step: send me pricing for 40 seats and let's aim for a pilot in July.",
+    summary: "Jonas wants pricing for 40 seats and a July pilot.",
+    sentiment: "positive",
+    sentiment_evidence: "pilot in July",
+    authored_by_founder: true,
+  });
+  addInteraction("jonas-pricing-sent", {
+    contact_id: contactId("jonas"),
+    kind: "email_out",
+    occurred_at: "2026-07-06T09:00:00Z",
+    thread_ref: "thread:jonas:pricing",
+    raw_text: "Hi Jonas, sending pricing for the 40 seats we discussed and a proposed July pilot plan.",
+    summary: "Alex sent Shipfleet pricing for 40 seats and a July pilot plan.",
+    sentiment: "neutral",
+    authored_by_founder: true,
+  });
+  addInteraction("priya-inbound-disclaimers", {
+    contact_id: contactId("priya"),
+    kind: "email_in",
+    occurred_at: "2026-07-11T15:20:00Z",
+    thread_ref: "thread:priya:inbound",
+    raw_text: "Saw you on IndieHackers — does LingoLoop handle German legal disclaimers in onboarding videos? We're testing localization this month. Priya",
+    summary: "Priya asks whether LingoLoop handles German legal disclaimers after seeing Alex on IndieHackers.",
+    sentiment: "positive",
+    sentiment_evidence: "testing localization this month",
+    authored_by_founder: false,
+  });
+
   // Watchlist
   bundle.watchItems.push(
     { id: stableId("watch:subtitly"), user_id: userId, kind: "competitor", value: "Subtitly",
       allowed_domains: ["subtitly.example", "news.ycombinator.com", "producthunt.com"] },
     { id: stableId("watch:icp-kw"), user_id: userId, kind: "icp_keyword", value: "onboarding video localization",
       allowed_domains: ["reddit.com", "news.ycombinator.com"] },
+  );
+
+  bundle.webFixtures.push(
+    {
+      id: stableId("web:subtitly-free-tier"),
+      watch_item_id: stableId("watch:subtitly"),
+      title: "Subtitly launches free tier for SaaS localization",
+      url: "https://subtitly.example/blog/free-tier",
+      published_hint: "2026-07-13",
+      snippet: "Subtitly announced a free tier yesterday for teams localizing onboarding videos.",
+    },
+    {
+      id: stableId("web:reddit-localization-thread"),
+      watch_item_id: stableId("watch:icp-kw"),
+      title: "How do you localize walkthrough videos without re-recording?",
+      url: "https://reddit.com/r/SaaS/comments/example/localize_walkthrough_videos",
+      published_hint: "2026-07-14",
+      snippet: "Founder asks how to localize product walkthrough videos without re-recording; comments have no good answer yet.",
+    },
   );
 
   return bundle;

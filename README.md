@@ -1,87 +1,97 @@
-# Reteach Tomorrow
+# Helm
 
-**Every student gets a tutor. Every teacher gets their Sunday back.**
+**Five silos in. One decisive morning out.**
 
-A teacher pastes an assignment and rubric, uploads a whole class of submissions (typed, CSV, or **photos of handwritten work**), and gets back: instant Socratic feedback for every student, a class-wide misconception heatmap, and a one-click "reteach brief" — a mini-lesson plus fresh practice problems targeting exactly what the class got wrong.
+Helm is a founder co-pilot for solo and small B2B SaaS founders. It connects Gmail, Stripe, meeting notes, and a watchlist of competitors or customer communities, then turns scattered overnight activity into one ranked morning brief with evidence-backed action cards. The founder approves every action before anything is sent.
 
 🎥 **Demo video:** [YouTube link]
-🚀 **Live demo (no setup needed):** [deployed URL] — click **"Load sample class"** to judge it in 60 seconds
-🏆 **Track:** Education
+🚀 **Live sandbox for judges:** [URL]/sandbox — no signup, no OAuth, pre-loaded fictional startup
+🏆 **Track:** Work and productivity
 
 ---
 
 ## The problem
 
-Teachers spend 5+ hours a week grading, writing the same handful of comments over and over. Worse: grading one paper at a time means class-wide patterns stay invisible. If 14 of 25 students flip a sign when isolating x, no gradebook will ever tell the teacher that. Reteach Tomorrow makes the invisible pattern the headline.
+Founders lose important revenue signals because they are split across tools. A card failure sits in Stripe, a churn hint sits in Gmail, a procurement objection sits in call notes, and a competitor move sits on the web. Each tool shows its own slice; the founder has to become the integration layer.
+
+Helm makes the cross-silo story the headline and drafts the next move.
 
 ## What it does
 
-1. **Ingest anything.** Paste text, upload a CSV export, or drag in photos of handwritten worksheets (GPT-5.6 vision transcribes them).
-2. **Per-student Socratic feedback.** Rubric-aligned coaching that points at the broken reasoning step without giving away the answer.
-3. **Class misconception heatmap.** GPT-5.6 clusters errors across all submissions into named misconceptions with student counts and evidence quotes.
-4. **Reteach brief.** One click generates tomorrow's warm-up: a mini-lesson addressing the top misconception plus 3 targeted practice problems.
+1. **Ingests the founder's operating context.** Gmail, Stripe, pasted or forwarded meeting notes, and a web-search-backed watchlist.
+2. **Detects deterministic signals first.** Failed payments, unanswered inbound, quiet hot leads, renewal risks, and watchlist findings are created by rules before any LLM synthesis.
+3. **Cross-references silos.** GPT-5.6 merges legally related signals into one evidence-grounded story, such as a failed payment plus a consolidation email from the same customer.
+4. **Composes one morning brief.** The Today screen shows 3–5 ranked action cards, skipped-signal counts, supporting evidence, and a pre-drafted email, follow-up, social post, or task.
+5. **Acts only with approval.** The user can approve, edit, dismiss, or copy drafts. There is no autonomous send path.
+6. **Remembers the relationship.** Contact timelines and the ask-box answer questions with cited source interactions.
 
-## Quick start for judges
+## Judge it in 60 seconds
 
-**Fastest path — hosted demo (recommended):**
-1. Open [deployed URL]
-2. Click **"Load sample class"** (loads a realistic 8th-grade algebra assignment with 25 varied submissions, including handwritten photos)
-3. Click **"Grade class"** → explore per-student feedback → open the **Class Insights** tab → click **"Generate reteach brief"**
+1. Open **[URL]/sandbox**.
+2. Expand the first card: the sandbox should show the Datawise churn-risk storyline merged from Stripe, Gmail, and call notes.
+3. Inspect the evidence panel and draft.
+4. Click **Approve** in sandbox mode to simulate the send.
+5. Open **Agent Activity** to see pipeline steps, cost, and guardrail decisions.
 
-**Run locally:**
+## Run locally
+
 ```bash
 git clone [repo]
-cd reteach-tomorrow
-cp .env.example .env        # add your OPENAI_API_KEY
+cd FounderBrain
+cp env.example .env        # add OPENAI_API_KEY; set LLM_PROVIDER=openai
 npm install
-npm run dev                  # app on http://localhost:3000
+npx supabase start         # local Postgres + pgvector + Auth
+npx supabase db reset
+npm run seed:sandbox
+npm run dev                # app on http://localhost:3000
 ```
-Sample data lives in `/sample-data` (see its README). The "Load sample class" button works locally too.
 
-**Test with your own class:** upload any CSV with columns `student_name,answer`, or drop in JPG/PNG photos of written work.
-
-## How Codex and GPT-5.6 did the heavy lifting
-
-*(This section is deliberately specific — it's part of how judges evaluate technical implementation.)*
-
-### Codex (build time)
-- **Scaffolding & iteration:** The entire app was built inside Codex. Session ID for core functionality: `[/feedback session ID — also in submission form]`
-- **The misconception-aggregation pipeline** (`/lib/aggregate.ts`) was developed across 14+ Codex turns: we described desired clustering behavior in plain language, Codex implemented it, wrote tests, ran them, and fixed its own failures — including a subtle bug where near-duplicate misconception labels ("sign error" vs "flipped sign") fragmented the heatmap. Codex proposed and implemented the canonical-label merging step.
-- **Schema-drift hardening:** GPT-5.6 vision occasionally returned transcriptions that broke our JSON schema. Codex diagnosed the failure from logs and added Zod validation with automatic retry-with-repair (`/lib/llm.ts`).
-- **Key decisions made with Codex:** batching strategy for 25+ concurrent gradings (Codex benchmarked sequential vs. batched and implemented a concurrency pool), and the structured-output schema design for misconceptions.
-
-### GPT-5.6 (runtime)
-- **Vision:** transcribes photos of handwritten student work, preserving the student's actual steps (not just the final answer) so feedback can target the reasoning.
-- **Socratic feedback:** rubric-conditioned prompting with few-shot examples enforcing "question, don't answer" coaching (`/prompts/feedback.md`).
-- **Misconception clustering:** structured outputs (JSON schema) turn 25 free-form gradings into named misconceptions with counts and evidence.
-- **Reteach generation:** the brief is conditioned on the actual top misconceptions found, so practice problems attack the specific error, not the general topic.
+The sandbox path must work without Gmail OAuth or Stripe keys. Real integrations are optional for the hackathon demo.
 
 ## Architecture
 
+```text
+Next.js App Router + TypeScript
+Supabase Postgres + pgvector
+Nightly/manual pipeline:
+  ingest Gmail/Stripe/notes/watchlist
+  -> deterministic signal rules
+  -> GPT-5.6 cross-reference and ranking
+  -> GPT-5.6 brief and draft composition
+  -> deterministic guardrails
+  -> approval-gated execution
 ```
-Next.js (App Router) ── /api/grade ──► GPT-5.6 (per-student, concurrency pool)
-        │                                   │ structured JSON (rubric scores, feedback, error tags)
-        │                                   ▼
-        ├─── /api/aggregate ──► GPT-5.6 (misconception clustering, structured outputs)
-        ├─── /api/reteach ────► GPT-5.6 (brief + practice problems)
-        └─── /api/transcribe ─► GPT-5.6 vision (handwritten photos → steps)
-Storage: SQLite (dev) — one file, zero setup for judges
-```
+
+All LLM calls go through a provider-agnostic adapter. OpenAI GPT-5.6 is the default for the OpenAI Codex hackathon; the Gemini adapter remains a compile-time boundary for the later Google Cloud/XPRIZE path.
 
 ## Repo map
 
-```
-/app            UI (upload, per-student view, class insights, reteach brief)
-/lib            LLM client, schemas, aggregation pipeline, concurrency pool
-/prompts        All prompts as versioned markdown (feedback, clustering, reteach, vision)
-/sample-data    Ready-made class: assignment, rubric, 25 submissions, 3 handwriting photos
-/scripts        Dataset generator (see sample-data/README)
-```
+| File | Purpose |
+|---|---|
+| `helm-technical-design.md` | Source-of-truth architecture, data model, pipelines, milestones |
+| `guardrails-design.md` | Deterministic safety gates and degradation ladder |
+| `helm-sandbox-dataset.md` | Fictional startup fixture and golden-test expectations |
+| `day1-codex-bootstrap.md` | First Codex prompt for implementation sessions |
+| `pre-build-checklist.md` | Accounts, API keys, OAuth, infrastructure, and launch readiness |
+| `openai-build-week-readiness.md` | Verified Devpost submission requirements and final hackathon checklist |
+| `local-dev-deploy.md` | Supabase local stack and deployment path |
+| `gates.ts` / `gates.smoke.ts` | Guardrail schemas and smoke-test starting point |
+| `*.md` prompt files | Versioned prompts for pipeline stages |
 
-## Limitations & what's next
-- Feedback quality is tuned for math/short-answer science; long-form essays are v2.
-- No student accounts yet — teacher-facing by design for the hackathon scope.
-- Next: LMS import (Google Classroom), longitudinal misconception tracking per student.
+## Build-week plan
+
+- **Day 1:** schema, provider layer, seed slice, cross-reference to brief, ugly Today page.
+- **Day 2:** full sandbox loader, deterministic rules, golden test.
+- **Day 3:** Gmail OAuth and approval-gated draft/send on a test account.
+- **Day 4:** Stripe, notes, watchlist, contacts timeline, ask-box.
+- **Day 5:** polish, deploy, judge-proof sandbox.
+- **Day 6:** freeze features, film video, fix demo blockers only.
+- **Day 7:** submit with README, video, live sandbox, and Codex session evidence.
+
+## Guardrail promise
+
+Money signals, merge legality, urgency floors, recipients, promises, and sending are governed by deterministic code. The model can summarize, connect, and draft, but code validates provenance and a human approves execution.
 
 ## License
-MIT
+
+TBD before submission: MIT maximizes judge friendliness; Business Source License 1.1 better supports a commercial launch. Record the decision in `DECISIONS.md`.

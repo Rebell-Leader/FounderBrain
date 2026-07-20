@@ -1,0 +1,23 @@
+{
+  "name": "founderbrain-helm",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "tsx gates.smoke.ts",
+    "test:gates": "tsx gates.smoke.ts",
+    "generate:sandbox": "tsx generate-sandbox.ts",
+    "typecheck": "tsc --noEmit",
+    "seed:sandbox": "npm run generate:sandbox",
+    "seed": "npm run generate:sandbox"
+  },
+  "dependencies": {
+    "zod": "^3.25.76",
+    "drizzle-orm": "^0.44.2"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3",
+    "@types/node": "^22.16.5"
+  }
+}
