@@ -21,7 +21,9 @@ interface LLMProvider {
 // selected by env: LLM_PROVIDER=openai|gemini
 ```
 - All prompts in `/prompts/*.md`, provider-neutral wording, structured outputs via Zod schemas validated identically for both adapters (Gemini structured output quirks handled inside the adapter, never in business logic).
-- OpenAI hackathon build + demo runs `openai`. XPRIZE production runs `gemini` on Google Cloud. Golden tests (§8) must pass on BOTH providers — run the suite twice in CI.
+- The hackathon sandbox runs `openai`. Keep the Gemini adapter as a compiling
+  boundary only; run provider-parity golden tests after submission, when the
+  Gemini/Google Cloud path is actually being implemented.
 
 ### 1.2 Deployment duality
 - Containerized from day 1 (single Dockerfile). OpenAI demo: Vercel or Cloud Run — either fine. XPRIZE: **Cloud Run + Cloud Scheduler + Cloud SQL (Postgres)** — satisfies "uses at least one Google Cloud product" several times over.
@@ -30,11 +32,23 @@ interface LLMProvider {
 ### 1.3 Agent execution logging (XPRIZE evidence, also great for demo)
 Every pipeline run writes `agent_runs(id, user_id, trigger, steps_json, tokens, cost_usd, actions_proposed, actions_executed, started_at, finished_at)`. Steps_json = ordered log of every LLM call + tool call with truncated inputs/outputs. Surface as an "Agent activity" page. This is literally a submission requirement for XPRIZE ("agent execution logs... AI running in production continuously") and a credibility booster for OpenAI judges.
 
-## 2. Scope: what's IN and OUT (say no all week)
+## 2. Scope: ship the proof before the platform
 
-**IN (v1):** Gmail read/draft/send-with-approval · Stripe read-only (customers, subscriptions, invoices, failed payments) · meeting notes via paste + email-forward-to-ingest address · watchlist monitoring via LLM web search (competitors, ICP keyword mentions on Reddit/HN — search-based, NO Reddit API) · contact memory + timeline · morning brief generation · action cards with approve/edit/dismiss · sandbox mode with seeded fictional startup (see dataset doc) · Stripe billing for Helm itself (week 3, needed for XPRIZE revenue) · agent activity log.
+**Hackathon MVP (ship now):** an anonymous, precomputed LingoLoop sandbox;
+deterministic signals over frozen Gmail/Stripe/notes/watchlist fixtures;
+cross-silo merge and ranking; evidence panels; grounded drafts; client-side
+simulated approval; Agent Activity; and a network-free golden suite. The
+sandbox is read through a server-only DTO endpoint and never invokes a real
+integration on page load.
 
-**OUT (resist):** customer support tooling, product analytics (PostHog owns this), live social APIs, note-taker integrations (Fathom/Granola CSV import at most), calendar write, CRM pipelines/kanban, teams/multi-seat, mobile app, LinkedIn automation (ToS risk).
+**After the golden suite is stable:** Gmail read/draft/send-with-approval,
+Stripe ingestion, notes ingestion, live watchlist search, contact memory and
+ask-box, billing, cron, and Gemini runtime parity.
+
+**Out:** customer support tooling, product analytics (PostHog owns this), live
+social APIs, note-taker integrations (Fathom/Granola CSV import at most),
+calendar write, CRM pipelines/kanban, teams/multi-seat, mobile app, and
+LinkedIn automation (ToS risk).
 
 ## 3. Data model (Postgres)
 
@@ -77,40 +91,54 @@ One LLM call: top signals + user's product/ICP context + yesterday's brief (for 
 **Draft quality bar (test this):** email drafts must quote something concrete from the actual interaction history ("you mentioned the Q3 pilot on our call") — generic drafts are the product's death. Include contact's full timeline in the drafting context.
 
 ### 4.4 Execution
-Approve → Gmail API send (from user's own address); social drafts → copy button + "mark posted". Every execution updates `actions` + `agent_runs`. Edited-then-approved counts as executed with `edited=true` (track this — edit rate is your quality KPI).
+In the sandbox, Approve is client-side simulated state and never sends or
+persists to the shared fixture. In the later authenticated product, approval
+unlocks a Gmail API send from the founder's own address; social drafts use copy
+and "mark posted". Every real execution updates `actions` + `agent_runs`.
 
 ### 4.5 Scheduling
-Nightly cron (Cloud Scheduler / Vercel cron) per user at 6:00 local → full pipeline → brief ready + email notification "Your brief is ready" (with headline only, pull them into the app). Manual "Run now" button for demo and impatient users.
+Post-MVP: a nightly cron (Cloud Scheduler / Vercel cron) per user at 6:00 local
+→ full pipeline → brief-ready notification. A demo "Run now" button must be
+explicitly opt-in and use the same pipeline code path; it is not needed for the
+precomputed judge flow.
 
 ## 5. Memory & ask ("what did Marta say?")
 
 Chat box scoped to a contact or global. Retrieval: pgvector embeddings over `interactions.summary` + raw_text chunks, top-k → LLM answer with interaction citations (date + source). This is 1 day of work with pgvector and it's the retention hook — build it, keep it simple.
 
-## 6. UI (five screens)
+## 6. UI
 
-1. **Onboarding wizard:** product description, ICP, connect Gmail (OAuth), connect Stripe (restricted key paste), add 3 competitors + 3 keywords, import notes. **"Try sandbox instead"** button — loads the fictional startup (dataset doc) with zero connections. Judges take this path.
-2. **Today (home):** the brief. Headline, ranked action cards with draft preview, Approve / Edit / Dismiss inline. Yesterday's executed actions collapsed at bottom ("3 sent, 1 reply received ✓"). THE screen — disproportionate polish.
-3. **Contacts:** list + timeline detail view (every email/call/stripe event chronologically) + scoped ask-box.
-4. **Watchlist:** items + recent findings feed.
-5. **Agent activity:** runs, steps, cost. (Also: Settings with billing via Stripe Checkout, week 3.)
+**Hackathon MVP:** (1) sandbox Today with ranked cards, evidence, draft preview,
+and simulated approval; (2) Agent Activity with rule/model/gate steps and cost;
+and (3) a minimal sandbox entry page. Today gets the polish.
+
+**Later:** onboarding with real integrations, contacts with timeline/ask-box,
+watchlist, and billing settings.
 
 Design: calm, dense-but-breathable, keyboard-friendly (j/k through cards, a=approve). Founder tools win on speed-feel.
 
 ## 7. Build order
 
-- **M1 (Day 1):** Schemas + LLM provider layer with BOTH adapters stubbed (openai real, gemini compilable) + brief composition working over hardcoded seeded interactions → ugly Today page. End-to-end or bust.
-- **M2 (Day 2):** Sandbox dataset loader + signal detection rules + cross-referencing pass. Golden test green (§8).
-- **M3 (Day 3):** Gmail OAuth + delta sync + draft/send with approval. (Riskiest external dependency — if Google OAuth verification friction blocks demo, sandbox mode is the demo; real Gmail shown on YOUR account in video.)
-- **M4 (Day 4):** Stripe ingest + notes ingest + watchlist web-search pipeline + Contacts/timeline + ask-box (pgvector).
-- **M5 (Day 5):** Polish Today screen, agent activity page, deploy, sandbox one-click for judges.
-- **M6 (Day 6):** Video. Freeze. README.
-- **M7 (Day 7):** Submit OpenAI by noon PT.
-- **Week 2 (Jul 22–28):** Gemini adapter parity + Cloud Run deploy + Stripe billing + waitlist→onboarding + Product Hunt/r/SaaS launch (GTM plan in README appendix).
-- **Weeks 3–4:** customer feedback loop, testimonials + revenue evidence collection for XPRIZE narrative.
+- **M0:** Scaffold Next.js/Supabase/Vitest; make the checked-in migration reset;
+  compile `gates.ts` and its unit suite.
+- **M1:** Complete frozen LingoLoop fixture data; seed the sandbox Auth user;
+  implement deterministic rules and cross-reference gates; make the golden test
+  pass with no network credentials.
+- **M2:** Add a precomputed brief and agent-run seed; render the anonymous
+  server-side sandbox Today and Agent Activity views; simulated approval only.
+- **M3:** Deploy, rehearse the public path, film only the flow that exists, and
+  submit.
+- **After submission:** integrate Gmail/Stripe/notes/watchlist, then ask-box,
+  billing, scheduling, and Gemini/Cloud Run parity.
 
 ## 8. Testing
 
-- Golden test (both providers): run full pipeline on sandbox dataset → assert the 5 planted storylines each produce their expected signal kind, the cross-silo storyline (failed payment + quiet thread, same contact) is MERGED into one item, and it ranks #1.
+- Network-free golden test: run the deterministic sandbox pipeline → assert the
+  5 planted storylines each produce their expected signal kind, the cross-silo
+  storyline is merged into one item, and it ranks #1.
+- Opt-in OpenAI evaluation: rerun the same fixtures with GPT-5.6 only after the
+  deterministic test passes and record cost/latency. Gemini parity is a
+  post-submission acceptance test.
 - Draft-specificity test: every generated email draft contains ≥1 verbatim-checkable fact from that contact's interaction history (assert via string/embedding match against timeline).
 - Unit: signal rules, Gmail classifier, dedupe.
 

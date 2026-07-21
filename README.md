@@ -4,6 +4,11 @@
 
 Helm is a founder co-pilot for solo and small B2B SaaS founders. It connects Gmail, Stripe, meeting notes, and a watchlist of competitors or customer communities, then turns scattered overnight activity into one ranked morning brief with evidence-backed action cards. The founder approves every action before anything is sent.
 
+> **Build status:** the deterministic LingoLoop sandbox is implemented and
+> tested. It renders five grounded action cards, exposes a public read-only
+> brief DTO, and simulates approval locally. Database-backed integrations are
+> deliberately still deferred.
+
 🎥 **Demo video:** [YouTube link]
 🚀 **Live sandbox for judges:** [URL]/sandbox — no signup, no OAuth, pre-loaded fictional startup
 🏆 **Track:** Work and productivity
@@ -38,15 +43,21 @@ Helm makes the cross-silo story the headline and drafts the next move.
 ```bash
 git clone [repo]
 cd FounderBrain
-cp env.example .env        # add OPENAI_API_KEY; set LLM_PROVIDER=openai
 npm install
-npx supabase start         # local Postgres + pgvector + Auth
-npx supabase db reset
-npm run seed:sandbox
 npm run dev                # app on http://localhost:3000
+npm test                   # guardrail + golden-path tests, no network needed
+npm run test:fixtures      # validates the local source corpus and full fixture pipeline
 ```
 
-The sandbox path must work without Gmail OAuth or Stripe keys. Real integrations are optional for the hackathon demo.
+Open `http://localhost:3000/sandbox`. The sandbox works without Gmail OAuth,
+Stripe keys, or an OpenAI key. Set `OPENAI_API_KEY` and a private
+`SANDBOX_REFRESH_TOKEN` only to exercise the protected GPT-5.6 copy-refresh
+endpoint; it cannot send email or change a card's rank, evidence, or draft.
+
+Supabase is the next persistence milestone, not a dependency of the judge path.
+The production build currently uses Next's Webpack mode because Turbopack 16.2
+fails while prerendering this validated JSON fixture bundle; the same code path
+builds cleanly with Webpack and has no runtime dependency on a filesystem read.
 
 ## Architecture
 
@@ -74,18 +85,29 @@ All LLM calls go through a provider-agnostic adapter. OpenAI GPT-5.6 is the defa
 | `day1-codex-bootstrap.md` | First Codex prompt for implementation sessions |
 | `pre-build-checklist.md` | Accounts, API keys, OAuth, infrastructure, and launch readiness |
 | `local-dev-deploy.md` | Supabase local stack and deployment path |
-| `gates.ts` / `gates.smoke.ts` | Guardrail schemas and smoke-test starting point |
-| `*.md` prompt files | Versioned prompts for pipeline stages |
+| `BUILD_READINESS.md` | Current scope, blockers, and demo acceptance criteria |
+| `DECISIONS.md` | Product and architecture decisions |
+| `AGENTS.md` | Durable implementation conventions for Codex sessions |
+| `prompts/` | Versioned LLM prompt contracts |
+| `supabase/migrations/0001_init.sql` | Canonical database migration |
+| `src/lib/gates.ts` / `src/lib/gates.test.ts` | Guardrail schemas and tested safety contracts |
+| `sample-data/` | Versioned fictional Gmail, Stripe, notes, watchlist, and manifest fixtures |
+| `src/lib/sandbox/fixtures.ts` | Fixture schema, reference/anchor checks, and contact timelines |
+| `src/lib/sandbox/pipeline.ts` | Deterministic fixture-event pipeline and golden brief |
+| `src/lib/llm/openai.ts` | Server-only, token-protected GPT-5.6 copy refresh |
 
 ## Build-week plan
 
-- **Day 1:** schema, provider layer, seed slice, cross-reference to brief, ugly Today page.
-- **Day 2:** full sandbox loader, deterministic rules, golden test.
-- **Day 3:** Gmail OAuth and approval-gated draft/send on a test account.
-- **Day 4:** Stripe, notes, watchlist, contacts timeline, ask-box.
-- **Day 5:** polish, deploy, judge-proof sandbox.
-- **Day 6:** freeze features, film video, fix demo blockers only.
-- **Day 7:** submit with README, video, live sandbox, and Codex session evidence.
+- **Milestone 0:** scaffold Next.js/Vitest and compile the guardrail contracts. ✓
+- **Milestone 1:** build the Datawise fixture, deterministic rules, cross-reference,
+  and a network-free golden test. ✓
+- **Milestone 2:** render the precomputed sandbox Today screen, evidence panel,
+  simulated approval, Agent Activity view, and public read-only DTO. ✓
+- **Milestone 3:** deploy, rehearse the judge path in an incognito window, film
+  the actual shipped flow, and submit with Codex session evidence.
+
+Gmail, Stripe, live web search, retrieval chat, billing, cron, and Gemini
+runtime parity are follow-on work—not preconditions for the hackathon demo.
 
 ## Guardrail promise
 
