@@ -1,0 +1,34 @@
+{
+  "name": "helm-founder-brief",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --webpack",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:fixtures": "vitest run src/lib/sandbox/fixtures.test.ts src/lib/sandbox/pipeline.test.ts",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run test && npm run build"
+  },
+  "dependencies": {
+    "next": "latest",
+    "openai": "^6.48.0",
+    "react": "latest",
+    "react-dom": "latest",
+    "server-only": "^0.0.1",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "5.9",
+    "vitest": "latest"
+  }
+}
