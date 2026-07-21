@@ -1,5 +1,13 @@
 # GTM strategy — Helm
 
+> **PARKED 2026-07-21.** The founder chose to build personal-first and withdraw
+> from the XPRIZE commercial track (`DECISIONS.md`). This document assumes a
+> revenue goal by Aug 17 and is not the current plan. It is kept intact because
+> its analysis — the packaging-wedge framing, the competitive corrections, the
+> pricing benchmarks, the kill criteria — is what productization would resume
+> from. §2's forwarding-first email recommendation is superseded by
+> `docs/email-architecture.md`.
+
 **Written:** 2026-07-21. **Revised:** 2026-07-21 after competitive research and
 independent verification of its load-bearing claims. **Horizon:** the Build with
 Gemini XPRIZE submission on 2026-08-17 — 27 days.
