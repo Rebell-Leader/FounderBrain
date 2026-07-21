@@ -1,0 +1,20 @@
+[
+  {
+    "id": "marta-stripe",
+    "contactId": "contact-marta",
+    "occurredAt": "2026-07-19T08:40:00+02:00",
+    "type": "payment_failed",
+    "amountEur": 299,
+    "description": "€299 subscription payment failed because the card on file expired.",
+    "storyline": "S1"
+  },
+  {
+    "id": "noise-stripe-renewal",
+    "contactId": "contact-sarah",
+    "occurredAt": "2026-07-20T08:00:00+02:00",
+    "type": "payment_succeeded",
+    "amountEur": 149,
+    "description": "Routine €149 subscription renewal completed successfully.",
+    "storyline": "noise"
+  }
+]

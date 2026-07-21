@@ -1,0 +1,34 @@
+[
+  {
+    "id": "marta-call",
+    "contactId": "contact-marta",
+    "occurredAt": "2026-06-30T14:00:00+02:00",
+    "text": "Marta praised the workflow but flagged procurement pressure on tool count and asked for a CFO case study.",
+    "tags": ["procurement-risk", "case-study-requested"],
+    "storyline": "S1"
+  },
+  {
+    "id": "jonas-call",
+    "contactId": "contact-jonas",
+    "occurredAt": "2026-07-12T11:30:00+02:00",
+    "text": "Send me pricing for 40 seats; let's aim for a pilot in July.",
+    "tags": ["pricing-requested", "time-bound"],
+    "storyline": "S2"
+  },
+  {
+    "id": "routine-call-elena",
+    "contactId": "contact-elena",
+    "occurredAt": "2026-07-10T10:00:00+02:00",
+    "text": "Elena is happy with the latest onboarding video and has no open request.",
+    "tags": ["routine"],
+    "storyline": "noise"
+  },
+  {
+    "id": "routine-call-niko",
+    "contactId": "contact-niko",
+    "occurredAt": "2026-07-08T15:00:00+02:00",
+    "text": "Niko confirmed the existing workflow is stable and does not need a follow-up.",
+    "tags": ["routine"],
+    "storyline": "noise"
+  }
+]

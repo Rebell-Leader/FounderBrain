@@ -1,0 +1,32 @@
+[
+  {
+    "id": "subtitly-launch",
+    "occurredAt": "2026-07-20T09:00:00+02:00",
+    "kind": "competitor_result",
+    "title": "Subtitly launches a free tier",
+    "excerpt": "Subtitly announced a free tier for basic video localization.",
+    "url": "https://subtitly.example/free",
+    "intent": "competitor_move",
+    "storyline": "S3"
+  },
+  {
+    "id": "saas-thread",
+    "occurredAt": "2026-07-21T07:45:00+02:00",
+    "kind": "community_thread",
+    "title": "How are teams localizing product walkthroughs?",
+    "excerpt": "How are teams localizing product walkthrough videos without re-recording every language?",
+    "url": "https://reddit.example/r/saas/localization",
+    "intent": "icp_thread",
+    "storyline": "S4"
+  },
+  {
+    "id": "noise-stale-thread",
+    "occurredAt": "2026-06-28T08:00:00+02:00",
+    "kind": "community_thread",
+    "title": "Old localization thread",
+    "excerpt": "A three-week-old question with no current conversation to join.",
+    "url": "https://reddit.example/r/saas/old-localization",
+    "intent": "noise",
+    "storyline": "noise"
+  }
+]
