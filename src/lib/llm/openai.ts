@@ -5,8 +5,10 @@ import { join } from "node:path";
 import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
+import { promiseFirewall, verifyNumbersInCorpus } from "../gates";
+import { fixtureTimelineForContact } from "../sandbox/fixtures";
 import { getSandboxBrief } from "../sandbox/pipeline";
-import type { SandboxBrief } from "../sandbox/types";
+import type { BriefItem, SandboxBrief } from "../sandbox/types";
 
 const briefItemIds = ["datawise", "shipfleet", "kadenz", "subtitly", "icp-thread"] as const;
 const BriefItemId = z.enum(briefItemIds);
@@ -20,8 +22,16 @@ const BriefCopy = z.object({
   })).length(5),
 });
 
-type BriefCopy = z.infer<typeof BriefCopy>;
+export type SandboxBriefCopy = z.infer<typeof BriefCopy>;
 type BriefItemId = z.infer<typeof BriefItemId>;
+
+export interface CopyRejection {
+  field: "headline" | "whyNow" | "narrative";
+  itemId: BriefItemId | null;
+  gate: "promise firewall" | "number-in-evidence check";
+  code: string;
+  detail: string;
+}
 
 export class OpenAIConfigurationError extends Error {
   constructor(message: string) {
@@ -67,12 +77,136 @@ function asBriefItemId(id: string): BriefItemId {
   return id as BriefItemId;
 }
 
-function validateCopyShape(copy: BriefCopy, brief: SandboxBrief): void {
+function validateCopyShape(copy: SandboxBriefCopy, brief: SandboxBrief): void {
   const expectedIds = new Set(brief.items.map((item) => asBriefItemId(item.id)));
   const returnedIds = new Set(copy.items.map((item) => item.id));
   if (returnedIds.size !== expectedIds.size || [...expectedIds].some((id) => !returnedIds.has(id))) {
     throw new Error("Structured brief copy omitted or duplicated an action card.");
   }
+}
+
+function evidenceCorpus(item: BriefItem): string {
+  return [...item.evidence.map((evidence) => evidence.excerpt), item.title, ...item.mustReference].join(" ");
+}
+
+function founderAuthoredCorpus(item: BriefItem): string {
+  if (!item.contactId) return "";
+  return fixtureTimelineForContact(item.contactId)
+    .filter((entry) => entry.authoredByFounder)
+    .map((entry) => entry.text)
+    .join(" ");
+}
+
+function rejectedCopyField(
+  text: string,
+  corpus: string,
+  founderAuthored: string,
+  field: CopyRejection["field"],
+  itemId: BriefItemId | null,
+): CopyRejection | null {
+  const promiseResult = promiseFirewall(text, founderAuthored);
+  const numberResult = verifyNumbersInCorpus(text, corpus);
+
+  if (!promiseResult.ok) {
+    return {
+      field,
+      itemId,
+      gate: "promise firewall",
+      code: promiseResult.code,
+      detail: promiseResult.detail,
+    };
+  }
+  if (!numberResult.ok) {
+    return {
+      field,
+      itemId,
+      gate: "number-in-evidence check",
+      code: numberResult.code,
+      detail: numberResult.detail,
+    };
+  }
+  return null;
+}
+
+function rejectionDetail(rejection: CopyRejection): string {
+  const target = rejection.itemId ? `${rejection.field} for ${rejection.itemId}` : rejection.field;
+  return `${target} by the ${rejection.gate} (${rejection.code}: ${rejection.detail})`;
+}
+
+/**
+ * Applies deterministic safety gates to all model-authored copy fields. A bad
+ * field degrades to its frozen sandbox equivalent; it never fails the demo run.
+ */
+export function applyCopyGates(
+  copy: SandboxBriefCopy,
+  brief: SandboxBrief,
+): { brief: SandboxBrief; rejections: CopyRejection[] } {
+  validateCopyShape(copy, brief);
+  const rejections: CopyRejection[] = [];
+  const headlineRejection = rejectedCopyField(
+    copy.headline,
+    brief.items.flatMap((item) => item.evidence.map((evidence) => evidence.excerpt)).join(" "),
+    brief.items.map(founderAuthoredCorpus).join(" "),
+    "headline",
+    null,
+  );
+  if (headlineRejection) rejections.push(headlineRejection);
+
+  const copyById = new Map(copy.items.map((item) => [item.id, item]));
+  const items = brief.items.map((item) => {
+    const itemId = asBriefItemId(item.id);
+    const refreshed = copyById.get(itemId);
+    if (!refreshed) throw new Error(`Missing refreshed copy for ${item.id}`);
+
+    const corpus = evidenceCorpus(item);
+    const founderAuthored = founderAuthoredCorpus(item);
+    const whyNowRejection = rejectedCopyField(
+      refreshed.whyNow,
+      corpus,
+      founderAuthored,
+      "whyNow",
+      itemId,
+    );
+    const narrativeRejection = rejectedCopyField(
+      refreshed.narrative,
+      corpus,
+      founderAuthored,
+      "narrative",
+      itemId,
+    );
+    if (whyNowRejection) rejections.push(whyNowRejection);
+    if (narrativeRejection) rejections.push(narrativeRejection);
+
+    return {
+      ...item,
+      whyNow: whyNowRejection ? item.whyNow : refreshed.whyNow,
+      narrative: narrativeRejection ? item.narrative : refreshed.narrative,
+    };
+  });
+
+  const degraded = brief.agentRun.degraded || rejections.length > 0;
+  return {
+    brief: {
+      ...brief,
+      headline: headlineRejection ? brief.headline : copy.headline,
+      items,
+      agentRun: {
+        ...brief.agentRun,
+        degraded,
+        steps: rejections.length === 0
+          ? brief.agentRun.steps
+          : brief.agentRun.steps.map((step) =>
+            step.id === "brief"
+              ? {
+                ...step,
+                detail: `GPT-5.6 copy rejected: ${rejections.map(rejectionDetail).join("; ")}; showing deterministic copy.`,
+              }
+              : step,
+          ),
+      },
+    },
+    rejections,
+  };
 }
 
 export async function refreshSandboxBriefWithOpenAI(): Promise<SandboxBrief> {
@@ -98,24 +232,17 @@ export async function refreshSandboxBriefWithOpenAI(): Promise<SandboxBrief> {
     throw new Error("The OpenAI response did not contain structured brief copy.");
   }
 
-  validateCopyShape(response.output_parsed, brief);
-  const copyById = new Map(response.output_parsed.items.map((item) => [item.id, item]));
+  const gated = applyCopyGates(response.output_parsed, brief);
 
   return {
-    ...brief,
-    headline: response.output_parsed.headline,
-    items: brief.items.map((item) => {
-      const copy = copyById.get(asBriefItemId(item.id));
-      if (!copy) throw new Error(`Missing refreshed copy for ${item.id}`);
-      return { ...item, whyNow: copy.whyNow, narrative: copy.narrative };
-    }),
+    ...gated.brief,
     agentRun: {
-      ...brief.agentRun,
+      ...gated.brief.agentRun,
       provider: `Live GPT-5.6 Responses API refresh · response ${response.id}`,
       costUsd: "Live usage — inspect OpenAI dashboard",
       duration: "Live request",
-      steps: brief.agentRun.steps.map((step) =>
-        step.id === "brief"
+      steps: gated.brief.agentRun.steps.map((step) =>
+        step.id === "brief" && gated.rejections.length === 0
           ? { ...step, detail: "GPT-5.6 refreshed the brief copy after deterministic ranking and guardrails." }
           : step,
       ),

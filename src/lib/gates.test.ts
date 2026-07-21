@@ -7,6 +7,7 @@ import {
   shouldSkipLLM,
   verifyMergeLegality,
   verifyNoVanish,
+  verifyNumbersInCorpus,
   verifySubstring,
   withRepairRetry,
   type SignalRow,
@@ -52,6 +53,14 @@ describe("Helm deterministic guardrails", () => {
     expect(promiseFirewall("We can offer 20% off to stay.", "").ok).toBe(false);
     expect(shouldSkipLLM({ "list-unsubscribe": "<mailto:remove@example.com>" }, "news@example.com")).toBe(true);
     expect(shouldSkipLLM({}, "marta@datawise.example")).toBe(false);
+  });
+
+  it("rejects a standalone number that is absent from the evidence corpus", () => {
+    expect(verifyNumbersInCorpus("The payment is €299.", "A €299 payment failed.").ok).toBe(true);
+    expect(verifyNumbersInCorpus("The payment is €2,990.", "A €299 payment failed.")).toMatchObject({
+      ok: false,
+      code: "NUMBER_NOT_IN_EVIDENCE",
+    });
   });
 
   it("repairs one invalid structured response", async () => {

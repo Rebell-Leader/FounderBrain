@@ -13,6 +13,7 @@
 | 2026-07-21 | Ship the judge path from a local, deterministic LingoLoop fixture bundle before wiring Supabase. | The fully grounded experience is now runnable without credentials, database state, or latency risk. |
 | 2026-07-21 | Keep the GPT-5.6 refresh endpoint private and copy-only. | A token-protected server route may refresh headline/narrative copy, but deterministic code retains ranks, evidence, drafts, recipients, and execution boundaries. |
 | 2026-07-21 | Keep the sandbox source corpus in checked-in, schema-validated local JSON. | The pipeline now consumes Gmail-, Stripe-, notes-, and watchlist-shaped fixtures and golden tests catch data or rule drift before a live connector is introduced. |
+| 2026-07-21 | Model-authored brief copy passes the promise firewall and a number-in-evidence check; a rejected field falls back to deterministic copy and marks the run degraded. | Copy-only was not sufficient: unreviewed copy still reaches the founder. |
 
 ## Open decisions
 
