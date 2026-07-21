@@ -37,6 +37,20 @@ Helm makes the cross-silo story the headline and drafts the next move.
 
 The designed next step is to replace the frozen source corpus with live Gmail, Stripe, call-note, and watchlist connectors without weakening these boundaries.
 
+## Built with Codex and GPT-5.6
+
+Codex accelerated the implementation of the App Router UI, fixture pipeline,
+guardrail contracts, and Vitest golden suite through a test-first build loop.
+The key product decisions — a deterministic judge path, copy-only model scope,
+and no send path — are recorded in [DECISIONS.md](DECISIONS.md).
+
+GPT-5.6 is integrated through the OpenAI Responses API in
+[`src/lib/llm/openai.ts`](src/lib/llm/openai.ts). Its optional, token-gated
+refresh accepts fixture evidence and may rewrite only the headline, `why now`,
+and narrative copy after Zod validation and deterministic promise/number gates.
+It cannot change ranks, evidence, drafts, recipients, or approval behavior, and
+is disabled in the public judge deployment for reliability and cost control.
+
 ## Judge it in 60 seconds
 
 1. Open **[URL]/sandbox**.
@@ -54,6 +68,8 @@ npm install
 npm run dev                # app on http://localhost:3000
 npm test                   # guardrail + golden-path tests, no network needed
 npm run test:fixtures      # validates the local source corpus and full fixture pipeline
+npm run typecheck          # TypeScript validation
+npm run build              # production build
 ```
 
 Open `http://localhost:3000/sandbox`. The sandbox works without Gmail OAuth,
@@ -61,6 +77,7 @@ Stripe keys, or an OpenAI key. Set `OPENAI_API_KEY` and a private
 `SANDBOX_REFRESH_TOKEN` only to exercise the protected GPT-5.6 copy-refresh
 endpoint; it cannot send email or change a card's rank, evidence, or draft.
 
+`sample-data/` is the complete fictional source corpus used by the demo.
 Supabase is the next persistence milestone, not a dependency of the judge path.
 The production build currently uses Next's Webpack mode because Turbopack 16.2
 fails while prerendering this validated JSON fixture bundle; the same code path

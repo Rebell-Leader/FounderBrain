@@ -20,7 +20,7 @@ audio must explicitly cover how Codex was used and how GPT-5.6 powers it.**
 **Visual:** Helm's Today screen, headline visible.
 
 **VO:**
-> "This is Helm — a morning brief that acts. I built it with OpenAI Codex, and it runs on GPT-5.6. In this deterministic demo, it turns signals from email, Stripe, and call notes into the moves that matter, pre-drafted and ready for my approval."
+> "This is Helm — an evidence-backed founder morning brief. I built the app and its guardrails with OpenAI Codex, and GPT-5.6 powers an optional structured copy refresh behind those gates. This public demo uses a fictional, deterministic corpus shaped like email, Stripe, and call notes, so anyone can inspect the whole flow without connecting an account."
 
 ---
 
@@ -30,7 +30,7 @@ audio must explicitly cover how Codex was used and how GPT-5.6 powers it.**
 **Visual:** Today screen. Card #1: "Datawise is a churn risk on two fronts." Expand it: shows the Stripe failed payment AND the quiet email thread AND a quote from a call note three weeks ago.
 
 **VO:**
-> "Look at the top card. GPT-5.6 connected three silos: Marta's card failed in Stripe two days ago, her last email hinted they might consolidate tools, and — from a call three weeks ago — she'd mentioned procurement pressure. No single tool sees this. Helm's cross-referencing pass merged them into one story and ranked it number one."
+> "Look at the top card. Marta's card failed in Stripe two days ago, her last email hinted that Datawise might consolidate tools, and a call note records procurement pressure. Helm's deterministic merge gate verifies that all three signals belong to the same customer before combining them, then shows every source behind the rank-one story."
 
 **Beat 2 (1:05–1:25) — Act in one click.**
 **Visual:** The pre-drafted email inside the card: it references the procurement comment, gracefully handles the card issue, answers the consolidation question. Click **Edit** (change one word), click **Approve** → "Simulated approval ✓".
@@ -48,14 +48,14 @@ audio must explicitly cover how Codex was used and how GPT-5.6 powers it.**
 
 ## 1:50–2:35 — Codex + GPT-5.6 (required, specific)
 
-**Visual:** Real Codex session scrolling; then the Agent Activity page showing a live pipeline run with steps and cost.
+**Visual:** Real Codex session scrolling; then the Agent Activity page showing the completed fixture trace, followed by `src/lib/llm/openai.ts`.
 
 **VO:**
-> "How it was built: almost entirely inside Codex. Codex scaffolded the app, then built the signal-detection pipeline with me across dozens of turns — deterministic rules first, then a GPT-5.6 cross-referencing pass. When our golden test showed the Marta storyline splitting into two separate cards instead of merging, Codex diagnosed it, redesigned the merge step, and re-ran the tests until they passed. Our feedback session ID is in the submission."
+> "How it was built: I used Codex in a test-first loop to build the Next.js app, the fixture pipeline, the deterministic gates, and the golden tests. The key decision was to make the judge route deterministic: it keeps the evidence, merge legality, ranking, drafts, recipients, and approval boundary reliable and inspectable. Our feedback session ID is in the submission."
 >
-> "At runtime, GPT-5.6 does the heavy lifting: classifying and summarizing every email, extracting commitments from messy call notes, searching the web for competitor and customer signals, cross-referencing all of it into ranked stories, and drafting actions grounded in each contact's real history — with structured outputs end to end. Every run is logged: you can watch the agent think, step by step, on the activity page."
+> "GPT-5.6 is integrated through the OpenAI Responses API with structured Zod output. In the optional private refresh, it can improve only the headline and narrative copy from the supplied evidence. Deterministic number and promise gates validate that copy and fall back safely if it fails. I leave that endpoint disabled for judges, so this public flow has no credentials, model cost, or network failure mode."
 
-**On-screen text:** `Codex: pipeline built test-first, dozens of turns` · `GPT-5.6: classify → extract → search → cross-reference → draft`
+**On-screen text:** `Codex: app + fixtures + gates + golden tests` · `GPT-5.6: structured, copy-only refresh behind deterministic gates`
 
 ---
 
@@ -69,8 +69,8 @@ audio must explicitly cover how Codex was used and how GPT-5.6 powers it.**
 ---
 
 ## Production checklist
-- [ ] Record sandbox pre-warmed; "Run now" once off-camera first so the on-camera run is brisk
-- [ ] Say "Codex" and "GPT-5.6" aloud ≥2× each (script currently: 3 and 4)
+- [ ] Record the deployed sandbox, not localhost; it is instantly precomputed
+- [ ] Say "Codex" and "GPT-5.6" aloud ≥2× each (script currently: 2 and 2)
 - [ ] The Marta card expansion is the money shot — rehearse the cursor path
 - [ ] Do not show a Gmail send unless it was actually implemented and tested on your own account; the shipped sandbox uses simulated approval
 - [ ] Phone-muted test: on-screen text must carry the story
