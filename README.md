@@ -2,7 +2,7 @@
 
 **Five silos in. One decisive morning out.**
 
-Helm is a founder co-pilot for solo and small B2B SaaS founders. It connects Gmail, Stripe, meeting notes, and a watchlist of competitors or customer communities, then turns scattered overnight activity into one ranked morning brief with evidence-backed action cards. The founder approves every action before anything is sent.
+Helm's demo runs deterministic rules over a frozen, fictional corpus shaped like Gmail, Stripe, call notes, and a watchlist, then renders an evidence-backed LingoLoop morning brief. Live connectors to those sources are the designed next step; this build does not connect to a founder's accounts or send email.
 
 > **Build status:** the deterministic LingoLoop sandbox is implemented and
 > tested. It renders five grounded action cards, exposes a public read-only
@@ -21,14 +21,21 @@ Founders lose important revenue signals because they are split across tools. A c
 
 Helm makes the cross-silo story the headline and drafts the next move.
 
-## What it does
+## What the demo does
 
-1. **Ingests the founder's operating context.** Gmail, Stripe, pasted or forwarded meeting notes, and a web-search-backed watchlist.
-2. **Detects deterministic signals first.** Failed payments, unanswered inbound, quiet hot leads, renewal risks, and watchlist findings are created by rules before any LLM synthesis.
-3. **Cross-references silos.** GPT-5.6 merges legally related signals into one evidence-grounded story, such as a failed payment plus a consolidation email from the same customer.
-4. **Composes one morning brief.** The Today screen shows 3–5 ranked action cards, skipped-signal counts, supporting evidence, and a pre-drafted email, follow-up, social post, or task.
-5. **Acts only with approval.** The user can approve, edit, dismiss, or copy drafts. There is no autonomous send path.
-6. **Remembers the relationship.** Contact timelines and the ask-box answer questions with cited source interactions.
+1. **Loads a fictional source corpus.** The checked-in fixture bundle contains Gmail-, Stripe-, call-note-, and watchlist-shaped records for LingoLoop.
+2. **Detects signals deterministically.** Rules identify failed payments, unanswered inbound, quiet leads, and fixture watchlist intents without a model call.
+3. **Shows one grounded founder brief.** The server-rendered Today screen presents five ranked action cards with the supporting evidence, including the merged Datawise storyline.
+4. **Makes approval visibly safe.** Approve changes only local UI state; there is no email, database mutation, or autonomous send path.
+
+## What is real vs. precomputed
+
+- Signal detection, fixture parsing, manifest validation, and deterministic gate enforcement run for real.
+- The five action drafts, merge narratives, ranks, evidence selections, and recipients are frozen, validated sandbox outputs.
+- The only live model path is a token-gated OpenAI copy refresh; it can change only headline and narrative copy and is disabled in the judge deployment.
+- See [CODEMAP.md](CODEMAP.md) for the data flow, gate locations, and exact execution boundary.
+
+The designed next step is to replace the frozen source corpus with live Gmail, Stripe, call-note, and watchlist connectors without weakening these boundaries.
 
 ## Judge it in 60 seconds
 
@@ -41,7 +48,7 @@ Helm makes the cross-silo story the headline and drafts the next move.
 ## Run locally
 
 ```bash
-git clone [repo]
+git clone https://github.com/Rebell-Leader/FounderBrain.git
 cd FounderBrain
 npm install
 npm run dev                # app on http://localhost:3000
@@ -59,21 +66,20 @@ The production build currently uses Next's Webpack mode because Turbopack 16.2
 fails while prerendering this validated JSON fixture bundle; the same code path
 builds cleanly with Webpack and has no runtime dependency on a filesystem read.
 
-## Architecture
+## Current demo architecture
 
 ```text
 Next.js App Router + TypeScript
-Supabase Postgres + pgvector
-Nightly/manual pipeline:
-  ingest Gmail/Stripe/notes/watchlist
+Frozen, Zod-validated fictional fixture corpus
+Request/import-time pipeline:
+  parse Gmail-/Stripe-/notes-/watchlist-shaped records
   -> deterministic signal rules
-  -> GPT-5.6 cross-reference and ranking
-  -> GPT-5.6 brief and draft composition
-  -> deterministic guardrails
-  -> approval-gated execution
+  -> frozen, tested action-card composition
+  -> server-rendered read-only brief
+  -> local-only approval simulation
 ```
 
-All LLM calls go through a provider-agnostic adapter. OpenAI GPT-5.6 is the default for the OpenAI Codex hackathon; the Gemini adapter remains a compile-time boundary for the later Google Cloud/XPRIZE path.
+The sole model-aware endpoint is a server-only OpenAI Responses API copy refresh. It accepts only a private demo token, cannot alter ranks, evidence, drafts, or recipients, and is intentionally disabled in the judge deployment.
 
 ## Repo map
 
@@ -111,7 +117,7 @@ runtime parity are follow-on work—not preconditions for the hackathon demo.
 
 ## Guardrail promise
 
-Money signals, merge legality, urgency floors, recipients, promises, and sending are governed by deterministic code. The model can summarize, connect, and draft, but code validates provenance and a human approves execution.
+Money signals, merge legality, urgency floors, recipients, and promises are governed by deterministic code. In the sandbox, the frozen drafts are validated in the golden suite and approval is a local simulation; there is no execution path.
 
 ## License
 
