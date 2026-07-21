@@ -1,7 +1,7 @@
 import { verifySubstring, verifyMergeLegality, clampUrgency, applyUrgencyFloor,
   verifyNoVanish, promiseFirewall, recipientLock, sendInvariants,
   stripUncitedSentences, shouldSkipLLM, withRepairRetry, CrossReference,
-  type SignalRow } from "./gates";
+  type SignalRow } from "./src/lib/gates";
 import { z } from "zod";
 let failures = 0;
 

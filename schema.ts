@@ -1,5 +1,5 @@
 // schema.ts — Drizzle schema for Helm (Supabase Postgres + pgvector)
-// Place at /lib/db/schema.ts. Matches helm-technical-design.md §3 and gates.ts SignalRow.
+// Place at /lib/db/schema.ts. Matches helm-technical-design.md §3 and src/lib/gates.ts SignalRow.
 // Auth: Supabase Auth owns auth.users; our `users` table references its UUID.
 
 import {
