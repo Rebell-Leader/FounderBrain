@@ -219,19 +219,7 @@ begin
   end loop;
 end $$;
 
--- Sandbox read access: the shared sandbox tenant is readable by any signed-in user.
--- (Sandbox user row has is_sandbox=true; its user_id is fixed at seed time.)
-create policy sandbox_read_briefs on briefs for select
-  using (user_id in (select id from users where is_sandbox));
-create policy sandbox_read_actions on actions for select
-  using (user_id in (select id from users where is_sandbox));
-create policy sandbox_read_contacts on contacts for select
-  using (user_id in (select id from users where is_sandbox));
-create policy sandbox_read_interactions on interactions for select
-  using (user_id in (select id from users where is_sandbox));
-create policy sandbox_read_signals on signals for select
-  using (user_id in (select id from users where is_sandbox));
-create policy sandbox_read_runs on agent_runs for select
-  using (user_id in (select id from users where is_sandbox));
--- Sandbox writes (approve/simulated-send) go through server routes with the
--- service key against per-session sandbox *copies* — never the shared tenant.
+-- The anonymous sandbox never queries these tables directly. A server-only
+-- endpoint using the service role returns a deliberately limited fixture DTO;
+-- the service-role key must never reach the browser. Sandbox approval is a
+-- client-side simulation and never writes to the shared fixture or calls Gmail.
