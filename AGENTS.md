@@ -14,19 +14,24 @@ calendar product, billing system, or multi-user platform.
 
 Read these before changing behavior:
 
+- `CODEMAP.md` for the directory tour and where each guardrail is enforced.
 - `BUILD_READINESS.md` for scope and acceptance criteria.
-- `helm-technical-design.md` for the intended architecture.
-- `guardrails-design.md` and `src/lib/gates.ts` for safety contracts.
-- `helm-sandbox-dataset.md` and `prompts/` for fixture and LLM contracts.
+- `docs/helm-technical-design.md` for the intended architecture.
+- `docs/guardrails-design.md` and `src/lib/gates.ts` for safety contracts.
+- `docs/helm-sandbox-dataset.md` and `prompts/` for fixture and LLM contracts.
 - `DECISIONS.md` for decisions already made.
 
-The archived Reteach Tomorrow files are historical only; do not use them as
-product requirements.
+Everything under `archive/` is historical only — superseded planning docs and
+the Reteach Tomorrow predecessor. Never treat it as product requirements.
 
 ## Architecture rules
 
 - Use Next.js App Router, TypeScript, Supabase Postgres/Auth/pgvector, Zod, and
   Vitest. Keep business logic independent of route handlers.
+- Respect the directory contract: runnable application code lives under `src/`
+  (the only path `tsconfig.json` typechecks); design docs under `docs/`; prompts
+  under `prompts/`; standalone tooling under `scripts/`; superseded material
+  under `archive/`. Do not add new documentation or loose code to the repo root.
 - Keep all prompts in `prompts/`; do not inline long prompts in application code.
 - Route LLM calls through one provider interface. Use the OpenAI Responses API;
   structured output is validated with Zod and gets at most one repair retry.

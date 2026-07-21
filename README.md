@@ -77,24 +77,24 @@ All LLM calls go through a provider-agnostic adapter. OpenAI GPT-5.6 is the defa
 
 ## Repo map
 
-| File | Purpose |
+`CODEMAP.md` is the detailed tour — every directory, the data flow, and where
+each guardrail is enforced. The short version:
+
+| Path | Purpose |
 |---|---|
-| `helm-technical-design.md` | Source-of-truth architecture, data model, pipelines, milestones |
-| `guardrails-design.md` | Deterministic safety gates and degradation ladder |
-| `helm-sandbox-dataset.md` | Fictional startup fixture and golden-test expectations |
-| `day1-codex-bootstrap.md` | First Codex prompt for implementation sessions |
-| `pre-build-checklist.md` | Accounts, API keys, OAuth, infrastructure, and launch readiness |
-| `local-dev-deploy.md` | Supabase local stack and deployment path |
+| `docs/` | Design source of truth: architecture, guardrails, fixture spec, deploy, launch |
+| `prompts/` | The seven versioned LLM prompt contracts — no prompt is inlined in code |
+| `src/lib/gates.ts` | Deterministic guardrail gates and shared Zod schemas |
+| `src/lib/sandbox/` | Fixture loading, deterministic rules, and the composed golden brief |
+| `src/lib/llm/` | Provider adapter — server-only, copy-only GPT-5.6 refresh |
+| `src/app/`, `src/components/` | Next.js App Router UI: Today, Agent Activity, sandbox API routes |
+| `sample-data/` | Frozen fictional Gmail, Stripe, notes, watchlist fixtures and manifest |
+| `supabase/` | Canonical migration plus the not-yet-wired Drizzle reference schema |
+| `scripts/` | Fixture generator and the standalone gate smoke script |
+| `archive/` | Superseded planning docs — historical only, never requirements |
 | `BUILD_READINESS.md` | Current scope, blockers, and demo acceptance criteria |
-| `DECISIONS.md` | Product and architecture decisions |
+| `DECISIONS.md` | Append-only product and architecture decision log |
 | `AGENTS.md` | Durable implementation conventions for Codex sessions |
-| `prompts/` | Versioned LLM prompt contracts |
-| `supabase/migrations/0001_init.sql` | Canonical database migration |
-| `src/lib/gates.ts` / `src/lib/gates.test.ts` | Guardrail schemas and tested safety contracts |
-| `sample-data/` | Versioned fictional Gmail, Stripe, notes, watchlist, and manifest fixtures |
-| `src/lib/sandbox/fixtures.ts` | Fixture schema, reference/anchor checks, and contact timelines |
-| `src/lib/sandbox/pipeline.ts` | Deterministic fixture-event pipeline and golden brief |
-| `src/lib/llm/openai.ts` | Server-only, token-protected GPT-5.6 copy refresh |
 
 ## Build-week plan
 
