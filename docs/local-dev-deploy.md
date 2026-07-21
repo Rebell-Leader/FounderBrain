@@ -11,8 +11,7 @@
 npm i -D supabase
 npx supabase init
 npx supabase start          # prints anon key, service_role key, DB URL, Studio URL
-# Put migration in place and apply:
-mkdir -p supabase/migrations && cp docs/0001_init.sql supabase/migrations/0001_init.sql
+# The migration is already checked in; apply it:
 npx supabase db reset       # applies migrations to the local stack
 ```
 `.env` for local: `DATABASE_URL` + `SUPABASE_URL=http://127.0.0.1:54321` + the two keys `supabase start` printed. Everything in env.example otherwise as-is.
@@ -20,17 +19,21 @@ npx supabase db reset       # applies migrations to the local stack
 Notes:
 - The migration references `auth.users` — that's why local Postgres must be the Supabase stack, not vanilla postgres. (If Docker is unavailable on your machine, fallback: create a free hosted Supabase project and point local dev at it — one project `helm-dev`, fine for a solo build week.)
 - pgvector + HNSW index are included in Supabase's Postgres by default.
-- `npx supabase db reset && npm run seed` is your clean-slate loop; keep it under 30 seconds so you actually use it.
+- `npx supabase db reset` is the clean-slate loop once persistence work begins.
+  The current judge path deliberately uses checked-in local fixtures instead of
+  a database seed.
 
 ### Daily loop
 ```bash
 npx supabase start                  # if not running
 npm run dev                         # Next.js on :3000
-npm run seed                        # loads sample-data/seed-bundle.json into sandbox tenant
-npm test                            # vitest: gates + golden suite (fast, no network)
-npm run test:llm                    # golden suite against real GPT-5.6 (env-gated, costs cents)
-npm run pipeline:run -- --user sandbox   # manual full run, prints agent_run steps
+npm run test:fixtures               # fixture schema + full local pipeline (fast, no network)
+npm test                            # all guardrail and golden-path tests
 ```
+
+`sample-data/` is the current integration-shaped corpus; it is statically
+bundled into the sandbox and never imported into Supabase. Add a real seed and
+`pipeline:run` only after the database-backed integration milestone begins.
 
 ### Auth locally
 Supabase Auth email magic-link works on the local stack (emails land in Inbucket, printed by `supabase start`). For build week, one real user (you) + the sandbox tenant is all you need; don't build signup polish until week 2.
@@ -63,8 +66,10 @@ No cron locally — the `pipeline:run` script IS the pipeline. Cron is a deploy-
 
 ### 2.4 Judge-proofing the deployment (Day 5 afternoon)
 - Open the prod sandbox in an incognito window on a phone hotspot: target < 3s to first brief render (pre-warm: keep the sandbox brief precomputed in DB, never generated on page load).
-- Seed the prod sandbox via a one-off script run (`npm run seed -- --remote`), not by clicking around.
-- Verify `/api/sample` (the "Load sample class"-equivalent reset) is idempotent — judges may click it repeatedly.
+- Deploy the checked-in fixture bundle with the app; judges never need a reset
+  endpoint or a database seed for the current sandbox.
+- If a database-backed sample loader is added later, make its reset operation
+  idempotent before exposing it to judges.
 - Add `robots.txt` disallow + a `demo` badge in the header so early PH visitors don't mistake sandbox data for real customers.
 
 ## 3. What deliberately stays out of build week

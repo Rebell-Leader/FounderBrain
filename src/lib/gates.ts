@@ -169,12 +169,16 @@ export async function verifyGrounding(
   }
   // Numeric hallucination check: every standalone number in body must appear in timeline or must_reference
   const corpus = (timeline.map((t) => t.text).join(" ") + " " + mustReference.join(" ")).toLowerCase();
-  const nums = draft.body.match(/\b\d[\d.,]*\b/g) ?? [];
-  const warnings: string[] = [];
-  for (const n of nums) {
-    if (!corpus.includes(n.toLowerCase())) return fail("NUMBER_NOT_IN_EVIDENCE", n);
+  return verifyNumbersInCorpus(draft.body, corpus);
+}
+
+/** Every standalone number in `text` must appear in `corpus`. */
+export function verifyNumbersInCorpus(text: string, corpus: string): GateResult {
+  const haystack = corpus.toLowerCase();
+  for (const n of text.match(/\b\d[\d.,]*\b/g) ?? []) {
+    if (!haystack.includes(n.toLowerCase())) return fail("NUMBER_NOT_IN_EVIDENCE", n);
   }
-  return pass(warnings);
+  return pass();
 }
 
 /** 3.2 Promise firewall: block unauthorized commitments. */

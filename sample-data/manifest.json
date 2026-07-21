@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "fixtureId": "lingoloop-morning-brief-v1",
+  "anchorDate": "2026-07-21",
+  "expectedBrief": {
+    "itemIds": ["datawise", "shipfleet", "kadenz", "subtitly", "icp-thread"],
+    "topItem": "datawise",
+    "skippedCount": 6,
+    "totalCandidates": 13
+  },
+  "expectations": [
+    { "storyline": "S1", "candidateIds": ["s1-payment", "s1-consolidation", "s1-procurement"], "merged": true, "rank": 1, "anchors": ["procurement pressure", "consolidat", "expired"] },
+    { "storyline": "S2", "candidateIds": ["s2-quiet-lead"], "merged": false, "rank": 2, "anchors": ["40 seats", "July"] },
+    { "storyline": "S3", "candidateIds": ["s3-competitor"], "merged": false, "rank": 4, "anchors": ["free tier"] },
+    { "storyline": "S4", "candidateIds": ["s4-icp-thread"], "merged": false, "rank": 5, "anchors": ["without re-recording"] },
+    { "storyline": "S5", "candidateIds": ["s5-inbound"], "merged": false, "rank": 3, "anchors": ["German legal disclaimers", "IndieHackers"] }
+  ]
+}

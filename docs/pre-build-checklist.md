@@ -6,7 +6,7 @@
 ## 1. Accounts, keys, config (half a day, do it now)
 
 ### Deadline-critical
-- [ ] **OpenAI Build Week: request free Codex credits — deadline Fri Jul 17, 12:00 PM PT** (Resources tab on the Devpost page). Miss this and you pay for your own tokens.
+- [ ] **OpenAI Build Week submission deadline: Jul 21, 2026, 5:00 PM PDT.** Preserve a Codex/GPT-5.6 evidence trail and commit history from the Jul 13 submission-period start; the previous Jul 17 credit deadline is obsolete.
 - [ ] Install the Devpost Hackathons plugin in ChatGPT; skim Official Rules; confirm the founder co-pilot is eligible for "Work and productivity" and that external launch/commercialization after submission is permitted (it should be — you retain IP — but read it).
 - [ ] Read Build with Gemini XPRIZE official rules for: when work may begin, whether a project also submitted elsewhere is eligible, revenue evidence format. Note both in DECISIONS.md.
 
@@ -30,7 +30,7 @@
 - [ ] YouTube account for the demo video; verify it can upload >2 min publicly.
 
 ### Repo
-- [ ] `git init` with: `/docs` (the 6 docs produced so far), `/prompts` (7 prompt files), `DECISIONS.md`, `.env.example` (provided), LICENSE decision (BSL vs MIT — decide before submission).
+- [x] Canonical requirements are in `BUILD_READINESS.md`, `helm-technical-design.md`, `guardrails-design.md`, `prompts/`, `supabase/migrations/`, `DECISIONS.md`, and `.env.example`. The archived Reteach material is not part of Helm.
 - [ ] First Codex session = the primary session for /feedback ID. Open it with the Day-1 bootstrap prompt (provided) and keep core pipeline work in it.
 
 ---

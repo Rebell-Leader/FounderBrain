@@ -1,5 +1,8 @@
 // schema.ts — Drizzle schema for Helm (Supabase Postgres + pgvector)
-// Place at /lib/db/schema.ts. Matches helm-technical-design.md §3 and gates.ts SignalRow.
+// Sits beside supabase/migrations/0001_init.sql, which is the canonical SQL it mirrors.
+// NOT yet wired: drizzle-orm is not a dependency and this file is outside the tsconfig
+// include, so it is a reference schema until the persistence milestone lands.
+// Matches docs/helm-technical-design.md §3 and src/lib/gates.ts SignalRow.
 // Auth: Supabase Auth owns auth.users; our `users` table references its UUID.
 
 import {

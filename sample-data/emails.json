@@ -1,0 +1,87 @@
+[
+  {
+    "id": "marta-email",
+    "threadId": "thread-datawise-review",
+    "contactId": "contact-marta",
+    "direction": "inbound",
+    "occurredAt": "2026-07-15T10:14:00+02:00",
+    "subject": "Planning for Q3",
+    "body": "We're evaluating whether to consolidate tools next quarter before the procurement review. Can you send the CFO case study when you have a moment?",
+    "category": "customer_thread",
+    "requiresReply": true,
+    "storyline": "S1"
+  },
+  {
+    "id": "jonas-email",
+    "threadId": "thread-shipfleet-pilot",
+    "contactId": "contact-jonas",
+    "direction": "outbound",
+    "occurredAt": "2026-07-13T09:20:00+02:00",
+    "subject": "Pricing for the 40-seat pilot",
+    "body": "Hi Jonas, as promised, here is the requested pricing for the 40-seat pilot. Happy to answer questions as you plan for July.",
+    "category": "lead_thread",
+    "requiresReply": false,
+    "storyline": "S2",
+    "purpose": "pricing"
+  },
+  {
+    "id": "priya-email",
+    "threadId": "thread-kadenz-disclaimer",
+    "contactId": "contact-priya",
+    "direction": "inbound",
+    "occurredAt": "2026-07-18T16:10:00+02:00",
+    "subject": "German legal disclaimers",
+    "body": "Saw you on IndieHackers — does LingoLoop handle German legal disclaimers?",
+    "category": "inbound_interest",
+    "requiresReply": true,
+    "storyline": "S5"
+  },
+  {
+    "id": "noise-newsletter-1",
+    "threadId": "thread-newsletter-product",
+    "contactId": null,
+    "direction": "inbound",
+    "occurredAt": "2026-07-20T09:00:00+02:00",
+    "subject": "The weekly product roundup",
+    "body": "A routine newsletter with a List-Unsubscribe header and no founder action.",
+    "category": "newsletter",
+    "requiresReply": false,
+    "storyline": "noise"
+  },
+  {
+    "id": "noise-newsletter-2",
+    "threadId": "thread-newsletter-sales",
+    "contactId": null,
+    "direction": "inbound",
+    "occurredAt": "2026-07-20T09:05:00+02:00",
+    "subject": "Revenue playbook digest",
+    "body": "Another low-priority newsletter intended for a mailing list.",
+    "category": "newsletter",
+    "requiresReply": false,
+    "storyline": "noise"
+  },
+  {
+    "id": "noise-vendor-pitch",
+    "threadId": "thread-vendor-pitch",
+    "contactId": null,
+    "direction": "inbound",
+    "occurredAt": "2026-07-20T09:10:00+02:00",
+    "subject": "Can we 10x your outbound?",
+    "body": "A cold vendor pitch with no relationship context or next step.",
+    "category": "vendor_pitch",
+    "requiresReply": false,
+    "storyline": "noise"
+  },
+  {
+    "id": "noise-happy-customer",
+    "threadId": "thread-kepler-thanks",
+    "contactId": "contact-elena",
+    "direction": "inbound",
+    "occurredAt": "2026-07-20T09:15:00+02:00",
+    "subject": "Thanks!",
+    "body": "Thanks, works great!",
+    "category": "customer_thread",
+    "requiresReply": false,
+    "storyline": "noise"
+  }
+]

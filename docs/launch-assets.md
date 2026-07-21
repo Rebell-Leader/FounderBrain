@@ -1,4 +1,12 @@
 # Launch Assets — Helm (Week 2: July 22–24)
+
+> **PARKED 2026-07-21.** Superseded by the decision to build personal-first and
+> withdraw from XPRIZE (`DECISIONS.md`). No launch is planned. Kept because the
+> copy is good and productization would start here — but note that
+> `docs/gtm-strategy.md` §1 concluded the approval-gated-drafting angle used
+> throughout this document is a position Fyxer already occupies, and would need
+> rewriting around the merge and the evidence trail instead.
+
 **Purpose: convert the hackathon build into XPRIZE revenue evidence. Everything below is draft copy — replace bracketed bits with your real story and rename "Helm" if you pick another name. Tone rule everywhere: founder-to-founder, specific, zero AI-hype vocabulary ("revolutionize", "supercharge" = banned).**
 
 ---

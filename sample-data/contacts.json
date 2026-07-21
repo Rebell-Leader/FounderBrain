@@ -1,0 +1,16 @@
+[
+  { "id": "contact-marta", "name": "Marta Kovač", "email": "marta@datawise.example", "company": "Datawise", "companyKey": "datawise", "relationship": "customer", "planEurMonthly": 299 },
+  { "id": "contact-jonas", "name": "Jonas Berg", "email": "jonas@shipfleet.example", "company": "Shipfleet", "companyKey": "shipfleet", "relationship": "lead", "planEurMonthly": null },
+  { "id": "contact-priya", "name": "Priya N.", "email": "priya@kadenz.example", "company": "Kadenz", "companyKey": "kadenz", "relationship": "lead", "planEurMonthly": null },
+  { "id": "contact-elena", "name": "Elena Rossi", "email": "elena@kepler.example", "company": "Kepler", "companyKey": "kepler", "relationship": "customer", "planEurMonthly": 149 },
+  { "id": "contact-niko", "name": "Niko Hall", "email": "niko@craftly.example", "company": "Craftly", "companyKey": "craftly", "relationship": "customer", "planEurMonthly": 79 },
+  { "id": "contact-sarah", "name": "Sarah Kim", "email": "sarah@orbit.example", "company": "Orbit", "companyKey": "orbit", "relationship": "customer", "planEurMonthly": 149 },
+  { "id": "contact-omar", "name": "Omar Aziz", "email": "omar@tandem.example", "company": "Tandem", "companyKey": "tandem", "relationship": "customer", "planEurMonthly": 79 },
+  { "id": "contact-lena", "name": "Lena Weber", "email": "lena@campfire.example", "company": "Campfire", "companyKey": "campfire", "relationship": "customer", "planEurMonthly": 79 },
+  { "id": "contact-jules", "name": "Jules Martin", "email": "jules@signalpath.example", "company": "SignalPath", "companyKey": "signalpath", "relationship": "customer", "planEurMonthly": 149 },
+  { "id": "contact-anika", "name": "Anika Shah", "email": "anika@scripted.example", "company": "Scripted", "companyKey": "scripted", "relationship": "customer", "planEurMonthly": 79 },
+  { "id": "contact-tomas", "name": "Tomas Novák", "email": "tomas@neon.example", "company": "Neon", "companyKey": "neon", "relationship": "customer", "planEurMonthly": 79 },
+  { "id": "contact-nora", "name": "Nora Okafor", "email": "nora@kern.example", "company": "Kern", "companyKey": "kern", "relationship": "customer", "planEurMonthly": 149 },
+  { "id": "contact-dan", "name": "Dan Wu", "email": "dan@alto.example", "company": "Alto", "companyKey": "alto", "relationship": "customer", "planEurMonthly": 149 },
+  { "id": "contact-sam", "name": "Sam Pereira", "email": "sam@northstar.example", "company": "Northstar", "companyKey": "northstar", "relationship": "customer", "planEurMonthly": 79 }
+]

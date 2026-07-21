@@ -1,0 +1,4 @@
+[
+  { "id": "watch-subtitly", "kind": "competitor", "value": "Subtitly", "allowedDomains": ["subtitly.example"] },
+  { "id": "watch-icp", "kind": "keyword", "value": "onboarding video localization", "allowedDomains": ["reddit.example"] }
+]
